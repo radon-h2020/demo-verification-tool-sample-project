@@ -1,0 +1,36 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+description: Definitions of RADON-specific policy types.
+
+policy_types:
+  radon.policies.Performance.AverageResponseTime:
+    derived_from: tosca.policies.Performance
+    properties:
+      lower_bound:
+        type: scalar-unit.time
+        required: false
+        constraints:
+          - greater_or_equal: 0 s
+      upper_bound:
+        type: scalar-unit.time
+        required: false
+        constraints:
+          - greater_or_equal: 0 s
+
+  radon.policies.Performance.ResponseTimePercentile:
+    derived_from: tosca.policies.Performance
+    properties:
+      rank:
+        type: integer
+        constraints:
+          - in_range: [1, 100]
+      lower_bound:
+        type: scalar-unit.time
+        required: false
+        constraints:
+          - greater_or_equal: 0 s
+      upper_bound:
+        type: scalar-unit.time
+        required: false
+        constraints:
+          - greater_or_equal: 0 s
