@@ -1,7 +1,0 @@
-tosca_definitions_version: tosca_simple_yaml_1_2
-
-description: Definitions of RADON-specific artifact types.
-
-artifact_types:
-  radon.artifacts.Deployment.Function:
-    derived_from: tosca.artifacts.Deployment
