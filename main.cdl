@@ -1,8 +1,19 @@
 import "service_template.tosca";
 import <function_conditions.cdl>;
 
+$X.host_node := $X.requirements[$Y].host.node;
+
+regions = {
+  eu-west-1,
+  eu-west-2,
+  cn-north-1,
+  us-east-1
+};
+
 eu-west-1.hosted_in = ireland;
 eu-west-2.hosted_in = uk;
+cn-north-1.hosted_in = china;
+us-east-1.hosted_in = us;
 
 all_countries = { uk, us, canada, china, india, ireland };
 supported_countries = { uk, us, canada, china, india };
@@ -26,17 +37,17 @@ create_thumbnails.invariant_conditions = {
   FORALL($B : thumbnail_buckets,
     $B.storage.includes(input.thumbnail)
     =>
-    input.country_of_origin.willing.includes($B.host.node.region.hosted_in)
+    input.country_of_origin.willing.includes($B.host_node.properties.region.hosted_in)
   )
 };
 
+
 functions = { create_thumbnails };
 
-static_variables = { input.country_of_origin };
 dynamic_variables = { uploads_1.storage, uploads_2.storage, new_node1.storage, new_node2.storage };
+runtime_variable_set dynamic_variables;
 
-
-#@show f;
+@depth 5;
 
 @show uploads_1.storage;
 @show uploads_2.storage;
@@ -44,10 +55,12 @@ dynamic_variables = { uploads_1.storage, uploads_2.storage, new_node1.storage, n
 @show new_node1;
 @show new_node2;
 
+new_nodes = {new_node1, new_node2};
 
-@extendable thumbnail_buckets;
-@definable new_node1;
-@definable new_node2;
+@extendable thumbnail_buckets, new_nodes;
+@definable new_node1.host_node.properties.region, regions;
+@definable new_node2.host_node.properties.region, regions;
 
-#@revisable supported_countries;
-#@revisable create_thumbnails.post_conditions;
+@correction_assertion(FORALL($T : thumbnail_buckets,
+  $T.host_node.properties.region.explicitly_defined
+));
